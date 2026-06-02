@@ -1,5 +1,5 @@
 <?php
-$sentence = "The quick brown fox&#8248; jumps over the lazy dog.";
+$sentence = "De zomers in Nederland worden steeds heter en het is belangrijk dat mensen, vooral degenen met een kwetsbare gezondheid of mensen die buiten werken, goed zijn beschermd tijdens periodes van hitte";
 ?>
 
 <!DOCTYPE html>
@@ -34,8 +34,8 @@ $sentence = "The quick brown fox&#8248; jumps over the lazy dog.";
 
         <section class="border border-slate-300 bg-white p-6 m-20 shadow-sm">
             <p class="block text-sm pb-6 font-medium text-slate-700">Type the phrase here</p>
-            <div class="border border-slate-200 bg-slate-50 p-4 text-md text-slate-700 shadow-sm" style="font-family: 'Arial Unicode MS', sans-serif;">
-                <span id="displayText"></span><span class="caret"></span>
+            <div class="border border-slate-200 bg-slate-50 p-4 text-lg font-bold text-slate-700 shadow-sm" style="font-family: Courier, monospace; position: relative;">
+                <span id="written" class="bg-green-400 whitespace-pre-wrap"></span><span id="wrong" class="bg-red-400 whitespace-pre-wrap"></span><span class="caret"></span><span id="sentence" class="whitespace-pre-wrap"><?php echo $sentence; ?></span>
             </div>
         </section>
     </main>
@@ -57,36 +57,51 @@ $sentence = "The quick brown fox&#8248; jumps over the lazy dog.";
 
     .caret {
         display: inline-block;
+        position: absolute;
         width: 0.9px;
         height: 1em;
         background-color: #000;
         margin: 0 1px;
         animation: blink 1s infinite;
-
     }
 </style>
 
 <script>
-    const sentence = {
-        <?php $sentence ?>
-    };
-    const displayText = document.getElementById('displayText');
-    const maxLength = sentence.length;
+    const writtenEle = document.getElementById('written');
+    const sentenceEle = document.getElementById('sentence');
+    const wrongEle = document.getElementById('wrong');
+    const sentence = sentenceEle.innerText;
     let written = "";
 
+    function renderWritten() {
+        if (!written) {
+            writtenEle.textContent = '';
+            wrongEle.textContent = '';
+            return;
+        }
+
+        const firstMistake = written.split('').findIndex((char, idx) => sentence[idx] !== char);
+        if (firstMistake === -1) {
+            writtenEle.textContent = written;
+            wrongEle.textContent = '';
+        } else {
+            writtenEle.textContent = written.slice(0, firstMistake);
+            wrongEle.textContent = written.slice(firstMistake);
+        }
+    }
+
     document.addEventListener('DOMContentLoaded', function() {
-        displayText.innerText = "";
-        console.log("Loaded");
         document.addEventListener('keydown', function(event) {
             let isPrintable = event.key && event.key.length === 1;
-            console.log(event.key);
             if (isPrintable) {
                 written += event.key;
-                displayText.innerText = written;
+                renderWritten();
+                sentenceEle.innerText = sentence.slice(written.length);
             } else if (event.key === "Backspace") {
                 event.preventDefault();
                 written = written.slice(0, -1);
-                displayText.innerText = written;
+                renderWritten();
+                sentenceEle.innerText = sentence.slice(written.length);
             }
         });
     });

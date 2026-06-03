@@ -17,8 +17,8 @@ $sentence = "Testing test"; //"De zomers in Nederland worden steeds heter en het
         <div class="relative flex items-center justify-center w-full">
             <h1 class="absolute left-4 text-3xl font-semibold text-slate-900">Type Racing</h1>
             <div class="flex items-center gap-4 text-md">
-                <a href="#">Home</a>
-                <a href="#">Play</a>
+                <a href="home.php">Home</a>
+                <a href="game.php">Play</a>
                 <a href="#">Leaderboard</a>
             </div>
         </div>

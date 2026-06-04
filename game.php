@@ -19,7 +19,7 @@ $sentence = "De zomers in Nederland worden steeds heter en het is belangrijk dat
             <div class="flex items-center gap-4 text-md">
                 <a href="home.php">Home</a>
                 <a href="game.php">Play</a>
-                <a href="#">Leaderboard</a>
+                <a href="leaderboard.php">Leaderboard</a>
             </div>
         </div>
     </nav>

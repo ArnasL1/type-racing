@@ -19,7 +19,7 @@
         <div class="flex items-center gap-4 text-md">
             <a href="home.php" class="hover:text-blue-600">Home</a>
             <a href="game.php" class="hover:text-blue-600">Play</a>
-            <a href="#" class="hover:text-blue-600">Leaderboard</a>
+            <a href="leaderboard.php" class="hover:text-blue-600">Leaderboard</a>
         </div>
     </div>
 </nav>

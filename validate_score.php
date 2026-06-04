@@ -27,4 +27,16 @@ if ($wpm > 304.76) {
     exit;
 }
 
+$conn = new mysqli('localhost','root','','type_racing');
+if ($conn->connect_error) { die('DB error: ' . $conn->connect_error); }
+
+$stmt = $conn->prepare(
+    'INSERT INTO scores (sentence_id, username, time_taken, mistakes, created_at)
+     VALUES (?, ?, ?, ?, NOW())'
+);
+$sentenceId = 1; // Replace with actual sentence ID
+$username = 'test_user'; // Replace with actual username from session
+$stmt->bind_param('sdii', $sentenceId, $username, $timeTaken, $mistakes);
+$stmt->execute();
+
 header('Location: leaderboard.php');

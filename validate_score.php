@@ -1,11 +1,16 @@
 <?php
 
+require_once "db.php";
+date_default_timezone_set("Europe/Amsterdam");
+
+
+
 $startTime = $_POST['startTime'] ?? -1;
 $endTime = $_POST['endTime'] ?? -1;
 $mistakes = $_POST['mistakes'] ?? -1;
-$sentence = $_POST['sentence'] ?? null;
+$sentenceId = $_POST['sentenceId'] ?? -1;
 
-if ($startTime < 0 || $endTime < 0 || $mistakes < 0 || !$sentence) {
+if ($startTime < 0 || $endTime < 0 || $mistakes < 0 || $sentenceId < 0) {
     http_response_code(400);
     echo json_encode(['error' => 'Invalid input']);
     exit;
@@ -18,8 +23,8 @@ if ($startTime >= $endTime) {
 }
 
 $timeTaken = $endTime - $startTime;
-$wordCount = str_word_count($sentence);
-$wpm = ($wordCount / $timeTaken) * 60;
+$wordCount = str_word_count($pdo->query("SELECT text FROM sentences WHERE id = $sentenceId")->fetchColumn());
+$wpm = ($wordCount / ($timeTaken / 1000)) * 60;
 
 if ($wpm > 304.76) {
     http_response_code(400);
@@ -27,16 +32,20 @@ if ($wpm > 304.76) {
     exit;
 }
 
-$conn = new mysqli('localhost','root','','type_racing');
-if ($conn->connect_error) { die('DB error: ' . $conn->connect_error); }
+$username = "Anonymous";
+$createdAt = date("Y-m-d H:i:s");
 
-$stmt = $conn->prepare(
-    'INSERT INTO scores (sentence_id, username, time_taken, mistakes, created_at)
-     VALUES (?, ?, ?, ?, NOW())'
-);
-$sentenceId = 1; // Replace with actual sentence ID
-$username = 'test_user'; // Replace with actual username from session
-$stmt->bind_param('sdii', $sentenceId, $username, $timeTaken, $mistakes);
-$stmt->execute();
+$stmt = $pdo->prepare("
+    INSERT INTO scores (sentence_id, username, time_taken, mistakes, created_at)
+    VALUES (:sentence_id, :username, :time_taken, :mistakes, :created_at)
+");
+
+$stmt->execute([
+    ":sentence_id" => $sentenceId,
+    ":username" => $username,
+    ":time_taken" => $timeTaken,
+    ":mistakes" => $mistakes,
+    ":created_at" => $createdAt
+]);
 
 header('Location: leaderboard.php');

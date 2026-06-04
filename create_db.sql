@@ -13,5 +13,9 @@ CREATE TABLE IF NOT EXISTS scores (
 
 CREATE TABLE IF NOT EXISTS sentences (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    sentence TEXT NOT NULL
+    text TEXT NOT NULL
     );
+
+UPDATE sentences SET text = "De zomers in Nederland worden steeds heter en het is belangrijk dat mensen, vooral degenen met een kwetsbare gezondheid or mensen die buiten werken, goed zijn beschermd tijdens periodes van hitte" WHERE id = 1;
+UPDATE sentences SET text = "testing" WHERE id = 2;
+UPDATE sentences SET text = "The quick brown fox jumps over the lazy dog" WHERE id = 3;

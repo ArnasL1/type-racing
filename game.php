@@ -1,5 +1,10 @@
 <?php
-$sentence = "De zomers in Nederland worden steeds heter en het is belangrijk dat mensen, vooral degenen met een kwetsbare gezondheid of mensen die buiten werken, goed zijn beschermd tijdens periodes van hitte";
+require_once "db.php";
+
+$stmt = $pdo->query("SELECT text, id FROM sentences ORDER BY RAND() LIMIT 1");
+$sentenceData = $stmt->fetch(PDO::FETCH_ASSOC);
+$sentence = $sentenceData['text'] ?? "No sentence available.";
+$sentenceId = $sentenceData['id'] ?? -1;
 ?>
 
 <!DOCTYPE html>
@@ -29,8 +34,7 @@ $sentence = "De zomers in Nederland worden steeds heter en het is belangrijk dat
             <div class="max-w-xs rounded border border-slate-200 bg-slate-50 mr-16 p-5 text-md text-slate-700 shadow-sm">
                 <div>WPM: <span id="wpmDisplay">0</span></div>
                 <div>Timer: <span id="timerDisplay">00:00</span></div>
-                <div>Mistakes: <span id="mistakesDisplay">0</span></div>
-                <div>Accuracy: <span id="accuracyDisplay">100%</span></div>
+                <div>Accuracy: <span id="accuracyDisplay">100% (0/0)</span></div>
             </div>
         </div>
 
@@ -46,7 +50,7 @@ $sentence = "De zomers in Nederland worden steeds heter en het is belangrijk dat
         <input type="hidden" name="startTime" id="formStartTime">
         <input type="hidden" name="endTime" id="formEndTime">
         <input type="hidden" name="mistakes" id="formMistakes">
-        <input type="hidden" name="sentence" id="formSentence">
+        <input type="hidden" name="sentenceId" id="formSentence" value="<?php echo $sentenceId; ?>">
     </form>
 </body>
 
@@ -80,7 +84,6 @@ $sentence = "De zomers in Nederland worden steeds heter en het is belangrijk dat
     const correctInputEle = document.getElementById('correct');
     const wrongInputEle = document.getElementById('wrong');
     const accuracyEle = document.getElementById('accuracyDisplay');
-    const mistakesEle = document.getElementById('mistakesDisplay');
     const timerEle = document.getElementById('timerDisplay');
     const wpmEle = document.getElementById('wpmDisplay');
     const sentence = sentenceEle.innerText;
@@ -111,14 +114,13 @@ $sentence = "De zomers in Nederland worden steeds heter en het is belangrijk dat
             document.getElementById('formStartTime').value = startTime;
             document.getElementById('formEndTime').value = endTime;
             document.getElementById('formMistakes').value = mistakes;
-            document.getElementById('formSentence').value = sentence;
             document.getElementById('postForm').submit();
         }
     }
 
     function updateAccuracy() {
         const accuracy = inputs === 0 ? 100 : Math.round(((inputs - mistakes) / inputs) * 100);
-        accuracyEle.textContent = accuracy + '%';
+        accuracyEle.textContent = `${accuracy}% (${inputs - mistakes}/${inputs})`;
     }
 
     function updateWPM(elapsedSeconds) {
@@ -146,7 +148,6 @@ $sentence = "De zomers in Nederland worden steeds heter en het is belangrijk dat
                 renderWritten();
                 if (sentence[written.length - 1] !== event.key) {
                     mistakes++;
-                    mistakesEle.textContent = mistakes;
                 }
                 updateAccuracy();
             } else if (event.key === "Backspace") {

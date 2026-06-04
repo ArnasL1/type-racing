@@ -1,5 +1,5 @@
 <?php
-$sentence = "De zomers in Nederland worden steeds heter en het is belangrijk dat mensen, vooral degenen met een kwetsbare gezondheid of mensen die buiten werken, goed zijn beschermd tijdens periodes van hitte";
+$sentence = "Testing test"; //"De zomers in Nederland worden steeds heter en het is belangrijk dat mensen, vooral degenen met een kwetsbare gezondheid of mensen die buiten werken, goed zijn beschermd tijdens periodes van hitte";
 ?>
 
 <!DOCTYPE html>
@@ -41,6 +41,13 @@ $sentence = "De zomers in Nederland worden steeds heter en het is belangrijk dat
             </div>
         </section>
     </main>
+
+    <form id="postForm" action="validate_score" method="POST" style="display: none;">
+        <input type="hidden" name="startTime" id="formStartTime">
+        <input type="hidden" name="endTime" id="formEndTime">
+        <input type="hidden" name="mistakes" id="formMistakes">
+        <input type="hidden" name="sentence" id="formSentence">
+    </form>
 </body>
 
 <style>
@@ -98,6 +105,15 @@ $sentence = "De zomers in Nederland worden steeds heter en het is belangrijk dat
             wrongInputEle.textContent = written.slice(firstMistake);
         }
         sentenceEle.innerText = sentence.slice(written.length);
+
+        if (written === sentence) {
+            const endTime = Date.now();
+            document.getElementById('formStartTime').value = startTime;
+            document.getElementById('formEndTime').value = endTime;
+            document.getElementById('formMistakes').value = mistakes;
+            document.getElementById('formSentence').value = sentence;
+            document.getElementById('postForm').submit();
+        }
     }
 
     function updateAccuracy() {

@@ -27,7 +27,9 @@ $sentence = "De zomers in Nederland worden steeds heter en het is belangrijk dat
     <main class="space-y-6">
         <div class="flex justify-end px-4">
             <div class="max-w-xs rounded border border-slate-200 bg-slate-50 mr-16 p-5 text-md text-slate-700 shadow-sm">
+                <div>WPM: <span id="wpmDisplay">0</span></div>
                 <div>Timer: <span id="timerDisplay">00:00</span></div>
+                <div>Mistakes: <span id="mistakesDisplay">0</span></div>
                 <div>Accuracy: <span id="accuracyDisplay">100%</span></div>
             </div>
         </div>
@@ -35,7 +37,7 @@ $sentence = "De zomers in Nederland worden steeds heter en het is belangrijk dat
         <section class="border border-slate-300 bg-white p-6 m-20 shadow-sm">
             <p class="block text-sm pb-6 font-medium text-slate-700">Type the phrase here</p>
             <div class="border border-slate-200 bg-slate-50 p-4 text-lg font-bold text-slate-700 shadow-sm" style="font-family: Courier, monospace; position: relative;">
-                <span id="written" class="bg-green-400 whitespace-pre-wrap"></span><span id="wrong" class="bg-red-400 whitespace-pre-wrap"></span><span class="caret"></span><span id="sentence" class="whitespace-pre-wrap"><?php echo $sentence; ?></span>
+                <span id="correct" class="bg-green-400 whitespace-pre-wrap"></span><span id="wrong" class="bg-red-400 whitespace-pre-wrap"></span><span class="caret"></span><span id="sentence" class="whitespace-pre-wrap"><?php echo $sentence; ?></span>
             </div>
         </section>
     </main>
@@ -67,41 +69,74 @@ $sentence = "De zomers in Nederland worden steeds heter en het is belangrijk dat
 </style>
 
 <script>
-    const writtenEle = document.getElementById('written');
     const sentenceEle = document.getElementById('sentence');
-    const wrongEle = document.getElementById('wrong');
+    const correctInputEle = document.getElementById('correct');
+    const wrongInputEle = document.getElementById('wrong');
+    const accuracyEle = document.getElementById('accuracyDisplay');
+    const mistakesEle = document.getElementById('mistakesDisplay');
+    const timerEle = document.getElementById('timerDisplay');
+    const wpmEle = document.getElementById('wpmDisplay');
     const sentence = sentenceEle.innerText;
     let written = "";
+    let startTime = null;
+    let inputs = 0;
+    let mistakes = 0;
 
     function renderWritten() {
         if (!written) {
-            writtenEle.textContent = '';
-            wrongEle.textContent = '';
+            correctInputEle.textContent = '';
+            wrongInputEle.textContent = '';
             return;
         }
 
         const firstMistake = written.split('').findIndex((char, idx) => sentence[idx] !== char);
         if (firstMistake === -1) {
-            writtenEle.textContent = written;
-            wrongEle.textContent = '';
+            correctInputEle.textContent = written;
+            wrongInputEle.textContent = '';
         } else {
-            writtenEle.textContent = written.slice(0, firstMistake);
-            wrongEle.textContent = written.slice(firstMistake);
+            correctInputEle.textContent = written.slice(0, firstMistake);
+            wrongInputEle.textContent = written.slice(firstMistake);
         }
+        sentenceEle.innerText = sentence.slice(written.length);
+    }
+
+    function updateAccuracy() {
+        const accuracy = inputs === 0 ? 100 : Math.round(((inputs - mistakes) / inputs) * 100);
+        accuracyEle.textContent = accuracy + '%';
+    }
+
+    function updateWPM(elapsedSeconds) {
+        const elapsedMin = elapsedSeconds / 60;
+        const wordsTyped = correctInputEle.textContent.split(' ').length - 1;
+        const wpm = Math.round(wordsTyped / elapsedMin);
+        wpmEle.textContent = wpm;
     }
 
     document.addEventListener('DOMContentLoaded', function() {
         document.addEventListener('keydown', function(event) {
             let isPrintable = event.key && event.key.length === 1;
             if (isPrintable) {
+                if (!startTime) {
+                    startTime = Date.now();
+                    setInterval(() => {
+                        const elapsedTime = (Date.now() - startTime) / 1000;
+                        timerEle.textContent = new Date(elapsedTime * 1000).toISOString().substr(14, 5);
+                        updateWPM(elapsedTime);
+                    }, 1000);
+                }
+
                 written += event.key;
+                inputs++;
                 renderWritten();
-                sentenceEle.innerText = sentence.slice(written.length);
+                if (sentence[written.length - 1] !== event.key) {
+                    mistakes++;
+                    mistakesEle.textContent = mistakes;
+                }
+                updateAccuracy();
             } else if (event.key === "Backspace") {
                 event.preventDefault();
                 written = written.slice(0, -1);
                 renderWritten();
-                sentenceEle.innerText = sentence.slice(written.length);
             }
         });
     });

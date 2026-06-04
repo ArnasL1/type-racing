@@ -21,7 +21,7 @@ $stmt = $pdo->prepare("
     ON s.username = latest.username
     AND s.created_at = latest.newest_score
     WHERE s.created_at BETWEEN :today_start AND :today_end
-    ORDER BY s.accuracy DESC, s.time_seconds ASC, s.mistakes ASC
+    ORDER BY s.mistakes DESC, s.time_taken ASC, s.mistakes ASC
 ");
 
 $stmt->execute([
@@ -109,11 +109,11 @@ $scores = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             </td>
 
                             <td class="border-b border-slate-100 px-4 py-3">
-                                <?php echo number_format($score["accuracy"], 2); ?>%
+                                <?php echo number_format($score["mistakes"], 2); ?>%
                             </td>
 
                             <td class="border-b border-slate-100 px-4 py-3">
-                                <?php echo number_format($score["time_seconds"], 2); ?>s
+                                <?php echo number_format($score["time_taken"], 2); ?>s
                             </td>
 
                             <td class="border-b border-slate-100 px-4 py-3">

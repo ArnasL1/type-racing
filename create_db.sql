@@ -16,6 +16,10 @@ CREATE TABLE IF NOT EXISTS sentences (
     text TEXT NOT NULL
     );
 
-UPDATE sentences SET text = "De zomers in Nederland worden steeds heter en het is belangrijk dat mensen, vooral degenen met een kwetsbare gezondheid or mensen die buiten werken, goed zijn beschermd tijdens periodes van hitte" WHERE id = 1;
-UPDATE sentences SET text = "testing" WHERE id = 2;
-UPDATE sentences SET text = "The quick brown fox jumps over the lazy dog" WHERE id = 3;
+INSERT INTO sentences (text) VALUES
+("De zomers in Nederland worden steeds heter en het is belangrijk dat mensen, vooral degenen met een kwetsbare gezondheid or mensen die buiten werken, goed zijn beschermd tijdens periodes van hitte."),
+("Als dieren die hierdoor getroffen worden niet behandeld worden, kan zo'n infectie in nog geen twee weken tot de dood leiden."),
+("In het verleden heeft de vlieg zo voor tientallen miljoenen dollars schade aangericht aan de Amerikaanse veestapel. In zeldzame gevallen kunnen ook mensen getroffen worden."),
+("De vlieg is ongeveer zo groot als een huisvlieg, maar heeft een veel langere snuit die gebruikt wordt om bloed te zuigen van dieren zoals runderen, paarden en schapen."),
+("Tijdens de expeditie werden onder meer acht nog niet beschreven libellesoorten gevonden, drie nieuwe sprinkhaansoorten en ongeveer zestig motten- en vlindersoorten die tot nu toe nog onbekend waren voor de wetenschap."),
+("De expeditie vond plaats in het kader van het project 'Biodiversiteit van de Amazone', dat gericht is op het in kaart brengen van de biodiversiteit in dit gebied en het identificeren van bedreigde soorten.");

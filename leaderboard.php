@@ -45,9 +45,9 @@ $scores = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <h1 class="absolute left-4 text-3xl font-semibold text-slate-900">Type Racing</h1>
 
             <div class="flex items-center gap-4 text-md">
-                <a href="home.php" class="hover:text-blue-600">Home</a>
-                <a href="game.php" class="hover:text-blue-600">Play</a>
-                <a href="leaderboard.php" class="hover:text-blue-600">Leaderboard</a>
+                <a href="/" class="hover:text-blue-600">Home</a>
+                <a href="game" class="hover:text-blue-600">Play</a>
+                <a href="leaderboard" class="hover:text-blue-600">Leaderboard</a>
             </div>
         </div>
     </nav>
@@ -56,10 +56,7 @@ $scores = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <section class="rounded border border-slate-300 bg-white p-8 shadow-sm">
             <div class="mb-6 flex items-center justify-between">
                 <div>
-                    <h2 class="text-4xl font-bold text-slate-900">Today's Leaderboard</h2>
-                    <p class="mt-2 text-slate-600">
-                        Showing the top 10 scores for today, including duplicate usernames.
-                    </p>
+                    <h2 class="text-4xl font-bold text-slate-900"><?= date("Y-m-d") ?> Leaderboard</h2>
                     <p class="text-sm text-slate-500">
                         Based on Europe/Amsterdam time.
                     </p>
@@ -88,7 +85,7 @@ $scores = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                 <th class="border-b border-slate-200 px-4 py-3">Username</th>
                                 <th class="border-b border-slate-200 px-4 py-3">Time</th>
                                 <th class="border-b border-slate-200 px-4 py-3">Accuracy</th>
-                                <th class="border-b border-slate-200 px-4 py-3">Mistakes</th>
+                                <th class="border-b border-slate-200 px-4 py-3">Words per minute</th>
                                 <th class="border-b border-slate-200 px-4 py-3">Sentence</th>
                                 <th class="border-b border-slate-200 px-4 py-3">Played At</th>
                             </tr>
@@ -98,11 +95,11 @@ $scores = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             <?php foreach ($scores as $index => $score): ?>
                                 <?php
                                 $sentenceText = $pdo->query("SELECT text, id FROM sentences WHERE id = {$score["sentence_id"]}")->fetchColumn() ?? "Unknown sentence";
-                                $sentenceLength = mb_strlen($sentenceText) ?? 1;
-                                $accuracyValue = round((($sentenceLength - $score["mistakes"]) / $sentenceLength) * 100, 2);
-                                $totalInputs = $sentenceLength + $score["mistakes"];
-                                $accuracyText = "$accuracyValue% ({$sentenceLength}/{$totalInputs})";
-                                $displaySentence = $sentenceLength > 80 ? mb_substr($sentenceText, 0, 77) . '...' : $sentenceText;
+                                $sentenceLength = max(mb_strlen($sentenceText), 1);
+                                $displaySentence = $sentenceLength > 40 ? mb_substr($sentenceText, 0, 37) . '...' : $sentenceText;
+
+                                $totalInputs = max($sentenceLength + $score["mistakes"], 1);
+                                $accuracyValue = round(($sentenceLength / $totalInputs) * 100, 2);
                                 ?>
                                 <tr class="hover:bg-slate-50">
                                     <td class="border-b border-slate-100 px-4 py-3 font-semibold">
@@ -118,14 +115,19 @@ $scores = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                     </td>
 
                                     <td class="border-b border-slate-100 px-4 py-3">
-                                        <?php echo htmlspecialchars($accuracyText); ?>
+                                        <?php echo htmlspecialchars("$accuracyValue% ({$sentenceLength}/{$totalInputs})"); ?>
                                     </td>
 
                                     <td class="border-b border-slate-100 px-4 py-3">
-                                        <?php echo $score["mistakes"]; ?>
+                                        <?php
+                                        $time = $score["time_taken"] / 1000;
+                                        $wordCount = str_word_count($sentenceText);
+                                        $wpm = ($wordCount / $time) * 60;
+                                        echo htmlspecialchars(number_format($wpm, 2));
+                                        ?>
                                     </td>
 
-                                    <td class="border-b border-slate-100 px-4 py-3" title="<?php echo htmlspecialchars($sentenceText); ?>">
+                                    <td class="border-b border-slate-100 px-4 py-3">
                                         <?php echo htmlspecialchars($displaySentence); ?>
                                     </td>
 

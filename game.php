@@ -22,9 +22,9 @@ $sentenceId = $sentenceData['id'] ?? -1;
         <div class="relative flex items-center justify-center w-full">
             <h1 class="absolute left-4 text-3xl font-semibold text-slate-900">Type Racing</h1>
             <div class="flex items-center gap-4 text-md">
-                <a href="home.php">Home</a>
-                <a href="game.php">Play</a>
-                <a href="leaderboard.php">Leaderboard</a>
+                <a href="/">Home</a>
+                <a href="game">Play</a>
+                <a href="leaderboard">Leaderboard</a>
             </div>
         </div>
     </nav>
@@ -32,18 +32,23 @@ $sentenceId = $sentenceData['id'] ?? -1;
     <main class="space-y-6">
         <div class="flex justify-end px-4">
             <div class="max-w-xs rounded border border-slate-200 bg-slate-50 mr-16 p-5 text-md text-slate-700 shadow-sm">
-                <div>WPM: <span id="wpmDisplay">0</span></div>
-                <div>Timer: <span id="timerDisplay">00:00</span></div>
-                <div>Accuracy: <span id="accuracyDisplay">100% (0/0)</span></div>
+                <div class="monospace">WPM: <span id="wpmDisplay">0</span></div>
+                <div class="monospace">Timer: <span id="timerDisplay">--:--:---</span></div>
+                <div class="monospace">Accuracy: <span id="accuracyDisplay">100% (0/0)</span></div>
             </div>
         </div>
-
-        <section class="border border-slate-300 bg-white p-6 m-20 shadow-sm">
-            <p class="block text-sm pb-6 font-medium text-slate-700">Type the phrase here</p>
-            <div class="border border-slate-200 bg-slate-50 p-4 text-lg font-bold text-slate-700 shadow-sm" style="font-family: Courier, monospace; position: relative;">
-                <span id="correct" class="bg-green-400 whitespace-pre-wrap"></span><span id="wrong" class="bg-red-400 whitespace-pre-wrap"></span><span class="caret"></span><span id="sentence" class="whitespace-pre-wrap"><?php echo $sentence; ?></span>
+        <?php if ($sentenceId === -1): ?>
+            <div class="rounded border border-red-300 bg-red-50 p-4 text-red-700 shadow-sm">
+                No sentences available.
             </div>
-        </section>
+        <?php else: ?>
+            <section class="border border-slate-300 bg-white p-6 m-20 shadow-sm">
+                <p class="block text-sm pb-6 font-medium text-slate-700">Type the phrase here</p>
+                <div class="border border-slate-200 bg-slate-50 p-4 text-lg text-slate-700 shadow-sm monospace">
+                    <span id="correct" class="bg-green-400 whitespace-pre-wrap"></span><span id="wrong" class="bg-red-400 whitespace-pre-wrap"></span><span class="caret"></span><span id="sentence" class="whitespace-pre-wrap"><?php echo $sentence; ?></span>
+                </div>
+            </section>
+        <?php endif; ?>
     </main>
 
     <form id="postForm" action="validate_score" method="POST" style="display: none;">
@@ -66,6 +71,12 @@ $sentenceId = $sentenceData['id'] ?? -1;
         100% {
             opacity: 0;
         }
+    }
+
+    .monospace {
+        font-family: Courier, monospace;
+        position: relative;
+        font-weight: bold;
     }
 
     .caret {
@@ -138,9 +149,9 @@ $sentenceId = $sentenceData['id'] ?? -1;
                     startTime = Date.now();
                     setInterval(() => {
                         const elapsedTime = (Date.now() - startTime) / 1000;
-                        timerEle.textContent = new Date(elapsedTime * 1000).toISOString().substr(14, 5);
+                        timerEle.textContent = new Date(elapsedTime * 1000).toISOString().substr(14, 9);
                         updateWPM(elapsedTime);
-                    }, 1000);
+                    }, 50);
                 }
 
                 written += event.key;

@@ -32,7 +32,15 @@ if ($wpm > 304.76) {
     exit;
 }
 
-$username = "Anonymous";
+$username = trim($_POST["username"] ?? "");
+
+if ($username === "") {
+    $username = "Gebruiker" . rand(1000, 9999);
+}
+
+if (!preg_match('/^[a-zA-Z0-9 _-]{1,20}$/', $username)) {
+    $username = "Gebruiker" . rand(1000, 9999);
+}
 $createdAt = date("Y-m-d H:i:s");
 
 $stmt = $pdo->prepare("

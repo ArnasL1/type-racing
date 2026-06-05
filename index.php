@@ -17,7 +17,7 @@
         <h1 class="absolute left-4 text-3xl font-semibold text-slate-900">Type Racing</h1>
 
         <div class="flex items-center gap-4 text-md">
-            <a href="/" class="hover:text-blue-600">Home</a>
+            <a href="index.php" class="hover:text-blue-600">Home</a>
             <a href="game" class="hover:text-blue-600">Play</a>
             <a href="leaderboard" class="hover:text-blue-600">Leaderboard</a>
         </div>
@@ -58,6 +58,6 @@
         </a>
     </section>
 </main>
-
+<script src="username.js"></script>
 </body>
 </html>

@@ -22,7 +22,7 @@ $sentenceId = $sentenceData['id'] ?? -1;
         <div class="relative flex items-center justify-center w-full">
             <h1 class="absolute left-4 text-3xl font-semibold text-slate-900">Type Racing</h1>
             <div class="flex items-center gap-4 text-md">
-                <a href="/">Home</a>
+                <a href="index.php">Home</a>
                 <a href="game">Play</a>
                 <a href="leaderboard">Leaderboard</a>
             </div>
@@ -51,11 +51,12 @@ $sentenceId = $sentenceData['id'] ?? -1;
         <?php endif; ?>
     </main>
 
-    <form id="postForm" action="validate_score" method="POST" style="display: none;">
+    <form id="postForm" action="validate_score.php" method="POST" style="display: none;">
         <input type="hidden" name="startTime" id="formStartTime">
         <input type="hidden" name="endTime" id="formEndTime">
         <input type="hidden" name="mistakes" id="formMistakes">
         <input type="hidden" name="sentenceId" id="formSentence" value="<?php echo $sentenceId; ?>">
+        <input type="hidden" name="username" id="formUsername">
     </form>
 </body>
 
@@ -89,7 +90,7 @@ $sentenceId = $sentenceData['id'] ?? -1;
         animation: blink 1s infinite;
     }
 </style>
-
+<script src="username.js"></script>
 <script>
     const sentenceEle = document.getElementById('sentence');
     const correctInputEle = document.getElementById('correct');
@@ -125,6 +126,7 @@ $sentenceId = $sentenceData['id'] ?? -1;
             document.getElementById('formStartTime').value = startTime;
             document.getElementById('formEndTime').value = endTime;
             document.getElementById('formMistakes').value = mistakes;
+            document.getElementById('formUsername').value = getUsername();
             document.getElementById('postForm').submit();
         }
     }
